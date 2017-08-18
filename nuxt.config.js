@@ -1,3 +1,5 @@
+const { join } = require('path')
+
 module.exports = {
   /*
   ** Headers of the page
@@ -10,7 +12,8 @@ module.exports = {
       { hid: 'description', name: 'description', content: 'template' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'preload', as: 'style', href: 'https://fonts.googleapis.com/css?family=Roboto' }
     ]
   },
   /*
@@ -21,7 +24,7 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    vendor: ['axios', 'vue-notifications'],
+    vendor: ['axios', 'vue-notifications', 'vuetify'],
     extend (config, ctx) {
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({
@@ -33,5 +36,8 @@ module.exports = {
       }
     }
   },
-  plugins: ['~plugins/vue-notifications']
+  plugins: ['~plugins/vue-notifications', '~plugins/vuetify.js'],
+  css: [
+    { src: join(__dirname, 'css/app.styl'), lang: 'styl' }
+  ]
 }

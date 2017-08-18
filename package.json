@@ -15,7 +15,9 @@
   "dependencies": {
     "axios": "^0.16.2",
     "fs": "^0.0.1-security",
-    "nuxt": "^1.0.0-rc3"
+    "nuxt": "^1.0.0-rc3",
+    "path": "^0.12.7",
+    "vuetify": "^0.14.8"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -35,6 +37,8 @@
     "pug": "2.0.0-beta6",
     "pug-loader": "^2.3.0",
     "sass-loader": "^6.0.6",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.1",
     "vue-notifications": "^0.8.0"
   }
 }
