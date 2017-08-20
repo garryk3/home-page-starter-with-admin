@@ -16,8 +16,17 @@
               persistent-hint
             )
           v-flex(xs6)
-            v-text-field(label="Краткое описание статьи", required, textarea, rows="10")
-
+            v-text-field(label="Краткое описание статьи", required, textarea, rows="7")
+            v-text-field(
+              hint="Изображения для галереи",
+              type="file",
+              multiple,
+              persistent-hint
+            )
+        v-layout(row, justify-center)
+          v-flex(xs12)
+            v-btn(secondary, :loading="loading", @click="saveArticle", :disabled="loading") Сохранить
+            v-btn.blue-grey.white--text(@click="closeArticle") Закрыть
 
 </template>
 
@@ -26,10 +35,17 @@
     components: {},
     data () {
       return {
-        article: false
+        article: false,
+        loading: false
       }
     },
     methods: {
+      saveArticle () {
+        console.log('save article')
+      },
+      closeArticle () {
+        console.log('close')
+      }
     }
   }
 </script>
