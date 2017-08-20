@@ -24,7 +24,7 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    vendor: ['axios', 'vue-notifications', 'vuetify'],
+    vendor: ['axios', 'vue-notifications', 'vuetify', 'vue-quill-editor'],
     extend (config, ctx) {
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({

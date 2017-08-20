@@ -23,6 +23,9 @@
               multiple,
               persistent-hint
             )
+        v-layout
+          v-flex(xs12)
+            //editor
         v-layout(row, justify-center)
           v-flex(xs12)
             v-btn(secondary, :loading="loading", @click="saveArticle", :disabled="loading") Сохранить
