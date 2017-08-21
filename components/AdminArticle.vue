@@ -25,7 +25,10 @@
             )
         v-layout
           v-flex(xs12)
-            //editor
+            .quill-editor(
+              :content="content",
+              v-quill:myQuillEditor="editorOption"
+            )
         v-layout(row, justify-center)
           v-flex(xs12)
             v-btn(secondary, :loading="loading", @click="saveArticle", :disabled="loading") Сохранить
@@ -39,7 +42,16 @@
     data () {
       return {
         article: false,
-        loading: false
+        loading: false,
+        content: '<p>I am Example</p>',
+        editorOption: {
+          modules: {
+            toolbar: [
+              ['bold', 'italic', 'underline', 'strike'],
+              ['blockquote', 'code-block']
+            ]
+          }
+        }
       }
     },
     methods: {

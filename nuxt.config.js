@@ -36,8 +36,15 @@ module.exports = {
       }
     }
   },
-  plugins: ['~plugins/vue-notifications', '~plugins/vuetify.js'],
+  plugins: [
+    '~plugins/vue-notifications',
+    '~plugins/vuetify.js',
+    { src: '~plugins/nuxt-quill-plugin.js', ssr: false }
+  ],
   css: [
-    { src: join(__dirname, 'css/app.styl'), lang: 'styl' }
+    { src: join(__dirname, 'css/app.styl'), lang: 'styl' },
+    'quill/dist/quill.snow.css',
+    'quill/dist/quill.bubble.css',
+    'quill/dist/quill.core.css'
   ]
 }
