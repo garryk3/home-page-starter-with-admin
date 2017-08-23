@@ -29,7 +29,7 @@
               :content="content",
               v-quill:myQuillEditor="editorOption"
             )
-        v-layout(row, justify-center)
+        v-layout(row, justify-center).admin-article__buttons
           v-flex(xs12)
             v-btn(secondary, :loading="loading", @click="saveArticle", :disabled="loading") Сохранить
             v-btn.blue-grey.white--text(@click="closeArticle") Закрыть
@@ -43,12 +43,22 @@
       return {
         article: false,
         loading: false,
-        content: '<p>I am Example</p>',
+        content: '<p>Текст статьи...</p>',
         editorOption: {
           modules: {
             toolbar: [
               ['bold', 'italic', 'underline', 'strike'],
-              ['blockquote', 'code-block']
+              ['blockquote', 'code-block'],
+
+              [{'header': 1}, {'header': 2}],
+              [{'list': 'ordered'}, {'list': 'bullet'}],
+
+              [{'header': [1, 2, 3, 4, 5, 6, false]}],
+
+              [{'color': []}, {'background': []}],
+              [{'font': []}],
+              [{'align': []}],
+              ['image']
             ]
           }
         }
@@ -66,4 +76,9 @@
 </script>
 
 <style lang="stylus">
+  .admin-article {
+    &__buttons {
+      margin-top: 100px;
+    }
+  }
 </style>
