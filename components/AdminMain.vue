@@ -27,10 +27,11 @@
     },
     methods: {
       createCategory () {
-        console.log('create category', this.dialog)
+        console.log('create category')
       },
       createArticle () {
         console.log('create article')
+        this.$emit('changeView')
       }
     }
   }

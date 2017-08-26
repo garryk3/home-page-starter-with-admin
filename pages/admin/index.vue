@@ -3,8 +3,8 @@
     admin-sidebar
     v-flex(xs9).admin__body
       h5.admin__header Редактирование
-      admin-article(v-if="this.view === 'main'")
-      admin-main(v-else)
+      admin-article(v-if="view === 'article'", v-on:closeArticle="mainView")
+      admin-main(v-else, v-on:changeView="articleView")
 
 
 </template>
@@ -29,6 +29,12 @@ export default {
   methods: {
     createCategory () {
       console.log('create')
+    },
+    articleView () {
+      this.view = 'article'
+    },
+    mainView () {
+      this.view = 'main'
     }
   }
 }

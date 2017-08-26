@@ -69,7 +69,7 @@
         console.log('save article')
       },
       closeArticle () {
-        console.log('close')
+        this.$emit('closeArticle')
       }
     }
   }
