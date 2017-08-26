@@ -2,6 +2,7 @@
   v-card
     v-card-title(primary-title)
       h6 Статья
+      v-alert(success, :value="notice").admin-article__notice Сохранено
     v-card-text
       v-container(fluid)
         v-layout(row)
@@ -43,6 +44,7 @@
       return {
         article: false,
         loading: false,
+        notice: false,
         content: '<p>Текст статьи...</p>',
         editorOption: {
           modules: {
@@ -66,7 +68,10 @@
     },
     methods: {
       saveArticle () {
-        console.log('save article')
+        this.notice = true
+        setTimeout(() => {
+          this.$emit('closeArticle')
+        }, 1000)
       },
       closeArticle () {
         this.$emit('closeArticle')
@@ -79,6 +84,13 @@
   .admin-article {
     &__buttons {
       margin-top: 100px;
+    }
+    &__notice {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
     }
   }
 </style>
