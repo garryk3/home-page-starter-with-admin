@@ -1,5 +1,7 @@
 <template lang="pug">
   v-card
+    v-alert(success, :value="saveSuccess").admin-main__notice Сохранено
+    v-alert(error, :value="saveError").admin-main__notice Ошибка {{ error }}
     v-card-title(primary-title)
       div Для создания или редактирования статьи выберите ее из выпадающего списка слева
     v-layout(row, justify-center, style="position: relative;")
@@ -10,7 +12,7 @@
             v-card-title
               span.headline Введите название категории
             v-card-text
-              v-text-field(label="название", name="name", required)
+              v-text-field(v-model="categoryName", label="название", name="name", required)
             v-card-actions
               v-spacer
               v-btn.blue--text.darken-1(flat, @click.native="dialog = false") Закрыть
@@ -19,24 +21,46 @@
 </template>
 
 <script>
-  import instance from '~/plugins/axios'
+  import {http} from '~/plugins/axios'
   export default {
     data () {
       return {
-        dialog: false
+        dialog: false,
+        categoryName: '',
+        saveSuccess: false,
+        saveError: false,
+        timeout: null,
+        error: null
       }
     },
     methods: {
       createCategory () {
-        instance.post('/add-category', {title: 'new example'})
-          .then(() => {
-            console.log('!!!', instance)
-          })
+        if (this.categoryName.length) {
+          http.post('/add-category', {title: this.categoryName})
+            .then(() => {
+              this.saveSuccess = true
+              this.timeout = setTimeout(() => {
+                this.dialog = false
+                this.saveSuccess = false
+                this.categoryName = ''
+              }, 1000)
+            })
+            .catch((error) => {
+              this.error = error.message
+              this.saveError = true
+              this.timeout = setTimeout(() => {
+                this.saveError = false
+              }, 2000)
+            })
+        }
       },
       createArticle () {
-        console.log('create article')
         this.$emit('changeView')
       }
+    },
+
+    beforeDestroy () {
+      this.timeout && clearTimeout(this.timeout)
     }
   }
 </script>
@@ -45,6 +69,14 @@
   .admin-main {
     &__popup {
       overflow-x hidden;
+    }
+    &__notice {
+      z-index: 5;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
     }
   }
 </style>

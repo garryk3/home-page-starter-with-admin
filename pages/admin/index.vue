@@ -27,9 +27,6 @@ export default {
     AdminArticle
   },
   methods: {
-    createCategory () {
-      console.log('create')
-    },
     articleView () {
       this.view = 'article'
     },
