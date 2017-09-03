@@ -13,14 +13,20 @@
 import AdminSidebar from '~/components/AdminSidebar'
 import AdminMain from '~/components/AdminMain'
 import AdminArticle from '~/components/AdminArticle'
+import { mapState } from 'vuex'
+
 export default {
   layout: 'admin',
+  beforeMount () {
+    this.$store.dispatch('getDocumentsNames')
+  },
   data () {
     return {
       dialog: false,
       view: 'main'
     }
   },
+  computed: mapState({}),
   components: {
     AdminSidebar,
     AdminMain,

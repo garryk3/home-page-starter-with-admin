@@ -39,6 +39,10 @@
           http.post('/add-category', {title: this.categoryName})
             .then(() => {
               this.saveSuccess = true
+              http.get('/get-categories')
+                .then((res) => {
+                  this.$store.commit('getCategories', res.data)
+                })
               this.timeout = setTimeout(() => {
                 this.dialog = false
                 this.saveSuccess = false
@@ -50,6 +54,7 @@
               this.saveError = true
               this.timeout = setTimeout(() => {
                 this.saveError = false
+                this.error = null
               }, 2000)
             })
         }
