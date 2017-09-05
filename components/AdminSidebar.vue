@@ -15,7 +15,9 @@
     data () {
       return {}
     },
-    computed: mapState(['categories']),
+    computed: mapState({
+      categories: state => state.admin.categories
+    }),
     methods: {
     }
   }

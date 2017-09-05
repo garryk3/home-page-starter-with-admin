@@ -17,7 +17,7 @@ import { mapState } from 'vuex'
 
 export default {
   layout: 'admin',
-  beforeMount () {
+  beforeCreate () {
     this.$store.dispatch('getDocumentsNames')
   },
   data () {

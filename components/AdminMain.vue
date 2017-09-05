@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import {http} from '~/plugins/axios'
+  import {mapState} from 'vuex'
   export default {
     data () {
       return {
@@ -33,16 +33,15 @@
         error: null
       }
     },
+    computed: mapState({
+      categories: state => state.admin.categories
+    }),
     methods: {
       createCategory () {
+        console.log('r', this.categories)
         if (this.categoryName.length) {
-          http.post('/add-category', {title: this.categoryName})
+          this.$store.commit('addCategory')
             .then(() => {
-              this.saveSuccess = true
-              http.get('/get-categories')
-                .then((res) => {
-                  this.$store.commit('getCategories', res.data)
-                })
               this.timeout = setTimeout(() => {
                 this.dialog = false
                 this.saveSuccess = false
