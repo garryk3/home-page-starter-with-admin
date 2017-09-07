@@ -11,17 +11,21 @@ const getters = {
 
 const actions = {
   addCategory ({commit, state}, payload) {
-    return http.post('/add-category', {title: payload})
-      .then(() => {
-        console.log('1')
-        http.get('/get-documents-names')
-          .then((res) => {
-            commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
+    return new Promise((resolve) => {
+      const repeat = state.categories.some((item) => item.name === payload.name)
+      if (!repeat && payload.name && (typeof payload.name === 'string')) {
+        http.post('/add-category', {title: payload})
+          .then(() => {
+            resolve('success')
+            http.get('/get-documents-names')
+              .then((res) => {
+                commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
+              })
           })
-      })
-      .catch((error) => {
-        throw new Error(error)
-      })
+      } else {
+        throw new Error('неверное название категории')
+      }
+    })
   },
   getDocumentsNames ({commit}) {
     http.get('/get-documents-names')

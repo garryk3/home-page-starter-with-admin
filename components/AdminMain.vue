@@ -1,7 +1,7 @@
 <template lang="pug">
   v-card
     v-alert(success, :value="saveSuccess").admin-main__notice Сохранено
-    v-alert(error, :value="saveError").admin-main__notice Ошибка {{ error }}
+    v-alert(error, :value="saveError").admin-main__notice Ошибка: {{ error }}
     v-card-title(primary-title)
       div Для создания или редактирования статьи выберите ее из выпадающего списка слева
     v-layout(row, justify-center, style="position: relative;")
@@ -30,7 +30,7 @@
         saveSuccess: false,
         saveError: false,
         timeout: null,
-        error: null
+        error: ''
       }
     },
     computed: mapState({
@@ -38,22 +38,24 @@
     }),
     methods: {
       createCategory () {
-        console.log('r', this.categories)
         if (this.categoryName.length) {
-          this.$store.commit('addCategory')
-            .then(() => {
-              this.timeout = setTimeout(() => {
-                this.dialog = false
-                this.saveSuccess = false
-                this.categoryName = ''
-              }, 1000)
-            })
+          this.$store.dispatch('addCategory', this.categoryName)
+            .then(
+              () => {
+                this.saveSuccess = true
+                this.timeout = setTimeout(() => {
+                  this.dialog = false
+                  this.saveSuccess = false
+                  this.categoryName = ''
+                  this.error = ''
+                }, 1000)
+              })
             .catch((error) => {
               this.error = error.message
               this.saveError = true
               this.timeout = setTimeout(() => {
                 this.saveError = false
-                this.error = null
+                this.error = ''
               }, 2000)
             })
         }
