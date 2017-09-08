@@ -6,7 +6,12 @@ const state = {
 }
 
 const getters = {
-  categories: (state) => state.categories
+  categories: (state) => state.categories,
+  pureCategories: (state) => {
+    return state.categories.map((item) => {
+      return item.name
+    })
+  }
 }
 
 const actions = {

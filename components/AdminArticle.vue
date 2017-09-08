@@ -7,6 +7,12 @@
       v-container(fluid)
         v-layout(row)
           v-flex(xs6)
+            v-select(
+              :items="pureCategories",
+              v-model="select",
+              label="Выберите категорию",
+              data-vv-name="select",
+              required)
             v-text-field(label="Заголовок страницы", required, hint="title", persistent-hint)
             v-text-field(label="Название статьи", required, hint="tag H1", persistent-hint)
             v-text-field(label="Ключевые слова", required, hint="keywords (через запятую)", persistent-hint)
@@ -38,10 +44,19 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+
   export default {
     components: {},
     data () {
       return {
+        select: null,
+        items: [
+          'Item 1',
+          'Item 2',
+          'Item 3',
+          'Item 4'
+        ],
         article: false,
         loading: false,
         notice: false,
@@ -66,6 +81,9 @@
         }
       }
     },
+    computed: mapGetters({
+      pureCategories: 'pureCategories'
+    }),
     methods: {
       saveArticle () {
         this.notice = true
