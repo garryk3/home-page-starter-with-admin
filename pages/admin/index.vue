@@ -3,8 +3,8 @@
     admin-sidebar
     v-flex(xs9).admin__body
       h5.admin__header Редактирование
-      admin-article(v-if="view === 'article'", v-on:closeArticle="mainView")
-      admin-main(v-else, v-on:changeView="articleView")
+      admin-article(v-if="view === 'article'")
+      admin-main(v-else)
 
 
 </template>
@@ -22,23 +22,16 @@ export default {
   },
   data () {
     return {
-      dialog: false,
-      view: 'main'
+      dialog: false
     }
   },
-  computed: mapState({}),
+  computed: mapState({
+    view: state => state.admin.view
+  }),
   components: {
     AdminSidebar,
     AdminMain,
     AdminArticle
-  },
-  methods: {
-    articleView () {
-      this.view = 'article'
-    },
-    mainView () {
-      this.view = 'main'
-    }
   }
 }
 </script>

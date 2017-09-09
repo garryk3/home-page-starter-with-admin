@@ -17,9 +17,7 @@
     },
     computed: mapState({
       categories: state => state.admin.categories
-    }),
-    methods: {
-    }
+    })
   }
 </script>
 

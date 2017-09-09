@@ -16,8 +16,8 @@
             v-card-actions
               v-spacer
               v-btn.blue--text.darken-1(flat, @click.native="dialog = false") Закрыть
-              v-btn.blue--text.darken-1(flat, v-on:click="createCategory") Создать категорию
-      v-btn(v-on:click="createArticle") Создать статью
+              v-btn.blue--text.darken-1(flat, @click="createCategory") Создать категорию
+      v-btn(@click="createArticle") Создать статью
 </template>
 
 <script>
@@ -34,7 +34,8 @@
       }
     },
     computed: mapState({
-      categories: state => state.admin.categories
+      categories: state => state.admin.categories,
+      view: state => state.admin.view
     }),
     methods: {
       createCategory () {
@@ -61,7 +62,8 @@
         }
       },
       createArticle () {
-        this.$emit('changeView')
+        console.log('view', this.view)
+        this.$store.dispatch('changeView', 'article')
       }
     },
 

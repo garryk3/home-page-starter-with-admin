@@ -51,12 +51,6 @@
     data () {
       return {
         select: null,
-        items: [
-          'Item 1',
-          'Item 2',
-          'Item 3',
-          'Item 4'
-        ],
         article: false,
         loading: false,
         notice: false,
@@ -88,11 +82,11 @@
       saveArticle () {
         this.notice = true
         setTimeout(() => {
-          this.$emit('closeArticle')
+          this.$store.dispatch('changeView', 'main')
         }, 1000)
       },
       closeArticle () {
-        this.$emit('closeArticle')
+        this.$store.dispatch('changeView', 'main')
       }
     }
   }
@@ -104,6 +98,7 @@
       margin-top: 100px;
     }
     &__notice {
+      z-index: 1;
       position: fixed;
       top: 0;
       left: 0;

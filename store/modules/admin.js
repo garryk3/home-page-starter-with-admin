@@ -2,11 +2,11 @@ import * as types from '../mutation-types'
 import {http} from '~/plugins/axios'
 
 const state = {
-  categories: []
+  categories: [],
+  view: 'main'
 }
 
 const getters = {
-  categories: (state) => state.categories,
   pureCategories: (state) => {
     return state.categories.map((item) => {
       return item.name
@@ -40,6 +40,9 @@ const actions = {
   },
   updateCategories ({commit}, payload) {
     commit(types.UPDATE_CATEGORY, payload)
+  },
+  changeView ({commit}, article) {
+    commit(types.CHANGE_VIEW, {payload: article})
   }
 }
 
@@ -58,6 +61,9 @@ const mutations = {
         }
       }
     })
+  },
+  [types.CHANGE_VIEW] (state, {payload}) {
+    state.view = payload
   }
 }
 
