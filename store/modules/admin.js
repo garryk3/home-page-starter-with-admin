@@ -38,6 +38,9 @@ const actions = {
         commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
       })
   },
+  sendForm ({commit}, data) {
+    http.post('/add-article', data)
+  },
   updateCategories ({commit}, payload) {
     commit(types.UPDATE_CATEGORY, payload)
   },
