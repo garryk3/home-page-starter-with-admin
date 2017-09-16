@@ -18,22 +18,12 @@
               v-text-field(:rules="lengthRules", v-model="title", label="Заголовок страницы", required, hint="title", persistent-hint)
               v-text-field(:rules="lengthRules", v-model="name", label="Название статьи", required, hint="tag H1", persistent-hint)
               v-text-field(:rules="lengthRules", v-model="keywords", label="Ключевые слова", required, hint="keywords (через запятую)", persistent-hint)
-              v-text-field(
-                required,
-                hint="Основное изображение, необходимое для отображения краткого содержания статьи",
-                type="file",
-                name="mainImg",
-                persistent-hint
-              )
+              input-file(show-images, required, title="Выберите главное изображение")
+            v-flex(xs6).admin-article__right
+              v-text-field(v-model="shortText", :rules="lengthRules", label="Краткое описание статьи", required, textarea, rows="7")
+          v-layout
             v-flex(xs6)
-              v-text-field.admin-article__short-text(label="Краткое описание статьи", required, textarea, rows="7")
-              v-text-field.admin-article__gallery(
-                hint="Изображения для галереи",
-                type="file",
-                name="gallery",
-                multiple,
-                persistent-hint
-              )
+              input-file(show-images, multiple-file, title="Выберите изображения для галереи")
           v-layout
             v-flex(xs12)
               .quill-editor(
@@ -57,9 +47,10 @@
 
 <script>
   import { mapGetters } from 'vuex'
+  import InputFile from '~/components/InputFile'
 
   export default {
-    components: {},
+    components: { InputFile },
     data () {
       return {
         lengthRules: [
@@ -67,6 +58,9 @@
         ],
         valid: false,
         select: null,
+        mainImgView: [],
+        galleryView: [],
+        shortText: '',
         title: '',
         name: '',
         keywords: '',
@@ -105,7 +99,6 @@
         const title = this.title
         const name = this.title
         const keywords = this.keywords
-        console.log('s', form.validate())
         if (form.validate()) {
           console.log(title, name, keywords)
           data.append('category', category.innerHTML)
@@ -140,6 +133,9 @@
       left: 0;
       right: 0;
       text-align: center;
+    }
+    &__right {
+      padding-left: 40px;
     }
   }
 </style>
