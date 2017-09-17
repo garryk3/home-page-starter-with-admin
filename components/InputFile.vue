@@ -1,15 +1,16 @@
 <template lang="pug">
   v-container(fluid).input-file
     v-layout(row, wrap)
-      v-flex(xs12)
-        label.input-file__wrapper
+      v-flex(xs12).input-file__wrapper
+        input.input-file__input(:name="name", ref="input", type="file", @change="saveImages", :multiple="multipleFile")
+        v-btn.dark--text.input-file__upload-btn(block, @click="onChange")
+          v-icon(left, light) backup
           span.input-file__title {{ title }}
             span(v-if="required") *
-          input.input-file__input(type="file", @change="saveImages", :multiple="multipleFile", placeholder="lll")
     v-layout(row, wrap, v-if="showImages")
-      v-flex(v-for="item in images", key="index", xs4)
-        v-card.input-file__img-wrapper(flat, tile, height="50")
-          img.input-file__img(:src="item")
+      v-flex(v-for="item in images", key="index", v-bind="size")
+        v-card.input-file__img-wrapper(flat, tile)
+          v-card-media.input-file__img(:src="item", :height="imgHeight")
 </template>
 
 <script>
@@ -21,6 +22,25 @@
       }
     },
     props: {
+      fileUpload: {
+        type: String
+      },
+      imgHeight: {
+        default: 150,
+        type: Number
+      },
+      small: {
+        default: false,
+        type: Boolean
+      },
+      middle: {
+        default: false,
+        type: Boolean
+      },
+      large: {
+        default: false,
+        type: Boolean
+      },
       multipleFile: {
         default: false,
         type: Boolean
@@ -36,9 +56,27 @@
       required: {
         default: false,
         type: Boolean
+      },
+      name: {
+        default: 'files',
+        type: String
+      }
+    },
+    computed: {
+      size () {
+        if (this.small) {
+          return {xs4: true}
+        } else if (this.middle) {
+          return {xs6: true}
+        } else {
+          return {xs12: true}
+        }
       }
     },
     methods: {
+      onChange () {
+        this.$refs.input.click()
+      },
       createImages (file) {
         const arr = []
         if (file.length) {
@@ -50,7 +88,6 @@
             }
             reader.readAsDataURL(item)
           })
-          console.log('arr', arr)
           this.images = arr
         }
         // const image = new Image()
@@ -58,6 +95,7 @@
       saveImages (e) {
         const files = e.target.files
         if (files.length) {
+          this.fileUpload && this.$emit(this.fileUpload, files)
           this.createImages(files)
         }
       }
@@ -65,40 +103,45 @@
   }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
   .input-file {
     padding: 0;
     color: rgba(0,0,0,.54);
-    margin: 20px 0;
     &__img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
     &__input {
+      z-index: 2;
       position: absolute;
+      top: 0;
       width: 100%;
       height: 100%;
       visibility : hidden
     }
     &__wrapper {
+      position: relative;
       display: block;
-      margin-bottom: 20px;
-      border-bottom: 1px solid rgba(0,0,0,.42);
-      &:hover {
-        border-bottom: 1px solid rgba(0,0,0,.87);
-      }
+      margin-bottom: 10px;
     }
     &__img-wrapper {
-      height: 150px;
-      padding: 5px;
+      margin-bottom: 15px;
       object-fit: contain;
       overflow: hidden;
     }
     &__title  {
-      display: block;
       font-size: 16px;
       line-height: 28px;
+      user-select: none;
+      overflow : hidden;
+      text-overflow: ellipsis;
+      white-space : nowrap;
+    }
+    &__upload-btn {
+      display: flex;
+      justify-content: flex-start;
+      overflow: hidden;
     }
   }
 </style>

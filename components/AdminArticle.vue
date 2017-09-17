@@ -18,12 +18,12 @@
               v-text-field(:rules="lengthRules", v-model="title", label="Заголовок страницы", required, hint="title", persistent-hint)
               v-text-field(:rules="lengthRules", v-model="name", label="Название статьи", required, hint="tag H1", persistent-hint)
               v-text-field(:rules="lengthRules", v-model="keywords", label="Ключевые слова", required, hint="keywords (через запятую)", persistent-hint)
-              input-file(show-images, required, title="Выберите главное изображение")
+              input-file(show-images, required, title="Главное изображение", large, fileUpload="input2", @input2="saveInput2")
             v-flex(xs6).admin-article__right
               v-text-field(v-model="shortText", :rules="lengthRules", label="Краткое описание статьи", required, textarea, rows="7")
           v-layout
             v-flex(xs6)
-              input-file(show-images, multiple-file, title="Выберите изображения для галереи")
+              input-file(show-images, multiple-file, title="Галерея", small, fileUpload="input1", @input1="saveInput1")
           v-layout
             v-flex(xs12)
               .quill-editor(
@@ -57,9 +57,9 @@
           (v) => !!v || 'Заполните поле'
         ],
         valid: false,
+        images1: null,
+        images2: null,
         select: null,
-        mainImgView: [],
-        galleryView: [],
         shortText: '',
         title: '',
         name: '',
@@ -92,6 +92,12 @@
       pureCategories: 'pureCategories'
     }),
     methods: {
+      saveInput1 (files) {
+        this.images1 = files
+      },
+      saveInput2 (files) {
+        this.images2 = files
+      },
       saveArticle () {
         const form = this.$refs.form
         const data = new FormData(form)
@@ -99,12 +105,15 @@
         const title = this.title
         const name = this.title
         const keywords = this.keywords
+        const images1 = this.images1
+        const images2 = this.images2
         if (form.validate()) {
-          console.log(title, name, keywords)
-          data.append('category', category.innerHTML)
+          data.append('category', category)
           data.append('title', title)
           data.append('name', name)
           data.append('keywords', keywords)
+          this.images1 && data.append('mainImg', images1)
+          this.images2 && data.append('gallery', images2)
         } else {
           return
         }
