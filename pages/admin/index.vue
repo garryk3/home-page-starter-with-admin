@@ -2,7 +2,7 @@
   v-layout(row, wrap)
     v-alert(success, :value="saveSuccess").admin__notice Сохранено
     v-alert(error, :value="saveError").admin__notice Ошибка: {{ error }}
-    admin-sidebar
+    admin-sidebar(@save-success="saveSuccessEvent", @save-error="saveErrorEvent")
     v-flex(xs9).admin__body
       h5.admin__header Редактирование
       admin-article(v-if="view === 'article'", @save-success="saveSuccessEvent", @save-error="saveErrorEvent")
@@ -21,6 +21,9 @@ export default {
   layout: 'admin',
   beforeCreate () {
     this.$store.dispatch('getDocumentsNames')
+      .catch((err) => {
+        this.saveErrorEvent(err)
+      })
   },
   beforeDestroy () {
     this.timeout && clearTimeout(this.timeout)
@@ -46,7 +49,7 @@ export default {
     },
     saveErrorEvent (err) {
       this.saveError = true
-      this.error = err.message
+      this.error = err.message || err.errmsg
       this.timeout = setTimeout(() => {
         this.saveError = false
         this.error = ''
@@ -63,12 +66,15 @@ export default {
 
 <style scoped lang="stylus">
   .admin {
+
     &__body {
       padding-top: 10px;
     }
+
     &__header {
       text-align: center
     }
+
     &__notice {
       z-index: 5;
       position: fixed;

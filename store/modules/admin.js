@@ -16,35 +16,34 @@ const getters = {
 
 const actions = {
   addCategory ({commit, state}, payload) {
-    return new Promise((resolve) => {
-      const repeat = state.categories.some((item) => item.name === payload)
-      if (!repeat && payload && (typeof payload === 'string')) {
-        http.post('/add-category', {title: payload})
-          .then(() => {
-            resolve('success')
-            http.get('/get-documents-names')
-              .then((res) => {
-                commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
-              })
-          })
-      } else {
-        throw new Error('неверное название категории')
-      }
-    })
+    const repeat = state.categories.some((item) => item.name === payload)
+    if (!repeat && payload && (typeof payload === 'string')) {
+      return http.post('/add-category', {title: payload})
+        .then((res) => {
+          if (res.data.error) {
+            throw new Error(res.data.error)
+          }
+          console.log('ew', res)
+          http.get('/get-documents-names')
+            .then((res) => {
+              commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
+            })
+        })
+    } else {
+      return Promise.reject(new Error('Категория уже существует'))
+    }
   },
   getDocumentsNames ({commit}) {
     return http.get('/get-documents-names')
       .then((res) => {
+        if (res.data.error) {
+          throw new Error(res.data.error || res.data.err.errmsg)
+        }
         commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
       })
   },
   addArticle ({commit}, data) {
-    return http.post('/add-article', data).then((res) => {
-      if (res.data && res.data.errmsg) {
-        throw new Error(res.data.errmsg)
-      }
-      return res
-    })
+    return http.post('/add-article', data)
   },
   changeView ({commit}, article) {
     commit(types.CHANGE_VIEW, {payload: article})
@@ -55,6 +54,17 @@ const actions = {
       category: payload.category,
       article: payload.article
     })
+  },
+  deleteCategory ({commit}, payload) {
+    commit(types.DELETE_CATEGORY, payload)
+    return http.post('/delete-category', {
+      category: payload.category
+    }).then((res) => {
+      if (res.data.error) {
+        throw new Error(res.data.error.message || res.data.err.errmsg)
+      }
+      return res
+    })
   }
 }
 
@@ -64,6 +74,10 @@ const mutations = {
   },
   [types.DELETE_ARTICLE] (state, payload) {
     state.categories[payload.catIndex].articles.splice(payload.artIndex, 1)
+    return state.categories
+  },
+  [types.DELETE_CATEGORY] (state, payload) {
+    state.categories.splice(payload.catIndex, 1)
     return state.categories
   },
   [types.UPDATE_CATEGORY] (state, {payload}) {

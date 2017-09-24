@@ -54,6 +54,7 @@
 
 <style lang="stylus">
   .admin-main {
+
     &__popup {
       overflow-x hidden;
     }

@@ -119,15 +119,15 @@
           this.images2 && data.append('gallery', images2)
           this.shortText && data.append('shortText', shortText)
           this.$store.dispatch('addArticle', data).then((res) => {
-            console.log('succ', res)
-            this.$emit('save-success')
-            this.timeout = setTimeout(() => {
-              this.$store.dispatch('changeView', 'main')
-              this.$store.dispatch('getDocumentsNames')
-            }, 1000)
-          }).catch((err) => {
-            console.log('err', err)
-            this.$emit('save-error', err)
+            if (res.data.error) {
+              this.$emit('save-error', res.data.error)
+            } else {
+              this.$emit('save-success')
+              this.timeout = setTimeout(() => {
+                this.$store.dispatch('changeView', 'main')
+                this.$store.dispatch('getDocumentsNames')
+              }, 1000)
+            }
           })
         }
       },
@@ -140,9 +140,11 @@
 
 <style lang="stylus">
   .admin-article {
+
     &__buttons {
       margin-top: 100px;
     }
+
     &__notice {
       z-index: 1;
       position: fixed;
@@ -151,6 +153,7 @@
       right: 0;
       text-align: center;
     }
+
     &__right {
       padding-left: 40px;
     }

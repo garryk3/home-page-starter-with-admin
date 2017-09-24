@@ -108,11 +108,13 @@
   .input-file {
     padding: 0;
     color: rgba(0,0,0,.54);
+
     &__img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
     &__input {
       z-index: 2;
       position: absolute;
@@ -121,16 +123,19 @@
       height: 100%;
       visibility : hidden
     }
+
     &__wrapper {
       position: relative;
       display: block;
       margin-bottom: 10px;
     }
+
     &__img-wrapper {
       margin-bottom: 15px;
       object-fit: contain;
       overflow: hidden;
     }
+
     &__title  {
       font-size: 16px;
       line-height: 28px;
@@ -139,6 +144,7 @@
       text-overflow: ellipsis;
       white-space : nowrap;
     }
+
     &__upload-btn {
       display: flex;
       justify-content: flex-start;
