@@ -107,6 +107,7 @@
         const keywords = this.keywords
         const images1 = this.images1
         const images2 = this.images2
+        const shortText = this.shortText
         if (form.validate()) {
           data.append('category', category)
           data.append('title', title)
@@ -114,14 +115,15 @@
           data.append('keywords', keywords)
           this.images1 && data.append('mainImg', images1)
           this.images2 && data.append('gallery', images2)
-        } else {
-          return
+          this.shortText && data.append('shortText', shortText)
+          this.$store.dispatch('sendForm', data)
+          this.notice = true
+          setTimeout(() => {
+            console.log('jjj')
+            this.$store.dispatch('changeView', 'main')
+            this.$store.dispatch('getDocumentsNames')
+          }, 1000)
         }
-        this.$store.dispatch('sendForm', data)
-        // this.notice = true
-        // setTimeout(() => {
-        // this.$store.dispatch('changeView', 'main')
-        // }, 1000)
       },
       closeArticle () {
         this.$store.dispatch('changeView', 'main')

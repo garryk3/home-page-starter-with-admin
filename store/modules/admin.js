@@ -53,6 +53,10 @@ const mutations = {
   [types.GET_DOCUMENTS_NAMES] (state, {payload}) {
     state.categories = payload
   },
+  [types.DELETE_ARTICLE] (state, payload) {
+    state.categories[payload.catIndex].articles.splice(payload.artIndex, 1)
+    return state.categories
+  },
   [types.UPDATE_CATEGORY] (state, {payload}) {
     state.categories = state.categories.map((item) => {
       if (item.name !== payload.name) {
