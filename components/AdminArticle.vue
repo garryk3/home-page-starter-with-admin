@@ -2,7 +2,6 @@
   v-card
     v-card-title(primary-title)
       h6 Статья
-      v-alert(success, :value="notice").admin-article__notice Сохранено
     v-card-text
       v-container(fluid)
         v-form(ref="form", v-model="valid")
@@ -51,6 +50,9 @@
 
   export default {
     components: { InputFile },
+    beforeDestroy () {
+      this.timeout && (this.timeout = null)
+    },
     data () {
       return {
         lengthRules: [
@@ -66,7 +68,7 @@
         keywords: '',
         article: false,
         loading: false,
-        notice: false,
+        timeout: null,
         content: '<p>Текст статьи...</p>',
         editorOption: {
           modules: {
@@ -116,13 +118,17 @@
           this.images1 && data.append('mainImg', images1)
           this.images2 && data.append('gallery', images2)
           this.shortText && data.append('shortText', shortText)
-          this.$store.dispatch('sendForm', data)
-          this.notice = true
-          setTimeout(() => {
-            console.log('jjj')
-            this.$store.dispatch('changeView', 'main')
-            this.$store.dispatch('getDocumentsNames')
-          }, 1000)
+          this.$store.dispatch('addArticle', data).then((res) => {
+            console.log('succ', res)
+            this.$emit('save-success')
+            this.timeout = setTimeout(() => {
+              this.$store.dispatch('changeView', 'main')
+              this.$store.dispatch('getDocumentsNames')
+            }, 1000)
+          }).catch((err) => {
+            console.log('err', err)
+            this.$emit('save-error', err)
+          })
         }
       },
       closeArticle () {

@@ -31,8 +31,10 @@
       deleteArticle (e) {
         const artIndex = e.target.closest('.admin-sidebar__text').dataset.index
         const catIndex = e.target.closest('.admin-sidebar__category').dataset.index
-        const payload = {catIndex, artIndex}
-        this.$store.commit('DELETE_ARTICLE', payload)
+        const article = e.target.closest('.admin-sidebar__text').dataset.name
+        const category = e.target.closest('.admin-sidebar__category').dataset.name
+        const payload = {catIndex, artIndex, category, article}
+        this.$store.dispatch('deleteArticle', payload)
       }
     }
   }

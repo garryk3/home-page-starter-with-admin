@@ -17,8 +17,8 @@ const getters = {
 const actions = {
   addCategory ({commit, state}, payload) {
     return new Promise((resolve) => {
-      const repeat = state.categories.some((item) => item.name === payload.name)
-      if (!repeat && payload.name && (typeof payload.name === 'string')) {
+      const repeat = state.categories.some((item) => item.name === payload)
+      if (!repeat && payload && (typeof payload === 'string')) {
         http.post('/add-category', {title: payload})
           .then(() => {
             resolve('success')
@@ -33,19 +33,28 @@ const actions = {
     })
   },
   getDocumentsNames ({commit}) {
-    http.get('/get-documents-names')
+    return http.get('/get-documents-names')
       .then((res) => {
         commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
       })
   },
-  sendForm ({commit}, data) {
-    http.post('/add-article', data)
-  },
-  updateCategories ({commit}, payload) {
-    commit(types.UPDATE_CATEGORY, payload)
+  addArticle ({commit}, data) {
+    return http.post('/add-article', data).then((res) => {
+      if (res.data && res.data.errmsg) {
+        throw new Error(res.data.errmsg)
+      }
+      return res
+    })
   },
   changeView ({commit}, article) {
     commit(types.CHANGE_VIEW, {payload: article})
+  },
+  deleteArticle ({commit}, payload) {
+    commit(types.DELETE_ARTICLE, payload)
+    return http.post('/delete-article', {
+      category: payload.category,
+      article: payload.article
+    })
   }
 }
 

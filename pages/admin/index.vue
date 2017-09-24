@@ -1,10 +1,12 @@
 <template lang="pug">
   v-layout(row, wrap)
+    v-alert(success, :value="saveSuccess").admin__notice Сохранено
+    v-alert(error, :value="saveError").admin__notice Ошибка: {{ error }}
     admin-sidebar
     v-flex(xs9).admin__body
       h5.admin__header Редактирование
-      admin-article(v-if="view === 'article'")
-      admin-main(v-else)
+      admin-article(v-if="view === 'article'", @save-success="saveSuccessEvent", @save-error="saveErrorEvent")
+      admin-main(v-else, @save-success="saveSuccessEvent", @save-error="saveErrorEvent")
 
 
 </template>
@@ -20,14 +22,37 @@ export default {
   beforeCreate () {
     this.$store.dispatch('getDocumentsNames')
   },
+  beforeDestroy () {
+    this.timeout && clearTimeout(this.timeout)
+  },
   data () {
     return {
-      dialog: false
+      dialog: false,
+      saveSuccess: false,
+      saveError: false,
+      timeout: null,
+      error: ''
     }
   },
   computed: mapState({
     view: state => state.admin.view
   }),
+  methods: {
+    saveSuccessEvent () {
+      this.saveSuccess = true
+      this.timeout = setTimeout(() => {
+        this.saveSuccess = false
+      }, 3000)
+    },
+    saveErrorEvent (err) {
+      this.saveError = true
+      this.error = err.message
+      this.timeout = setTimeout(() => {
+        this.saveError = false
+        this.error = ''
+      }, 3000)
+    }
+  },
   components: {
     AdminSidebar,
     AdminMain,
@@ -43,6 +68,14 @@ export default {
     }
     &__header {
       text-align: center
+    }
+    &__notice {
+      z-index: 5;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
     }
   }
 </style>

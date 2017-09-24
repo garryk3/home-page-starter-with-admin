@@ -1,7 +1,5 @@
 <template lang="pug">
   v-card
-    v-alert(success, :value="saveSuccess").admin-main__notice Сохранено
-    v-alert(error, :value="saveError").admin-main__notice Ошибка: {{ error }}
     v-card-title(primary-title)
       div Для создания или редактирования статьи выберите ее из выпадающего списка слева
     v-layout(row, justify-center, style="position: relative;")
@@ -26,11 +24,7 @@
     data () {
       return {
         dialog: false,
-        categoryName: '',
-        saveSuccess: false,
-        saveError: false,
-        timeout: null,
-        error: ''
+        categoryName: ''
       }
     },
     computed: mapState({
@@ -43,32 +37,17 @@
           this.$store.dispatch('addCategory', this.categoryName)
             .then(
               () => {
-                this.saveSuccess = true
-                this.timeout = setTimeout(() => {
-                  this.dialog = false
-                  this.saveSuccess = false
-                  this.categoryName = ''
-                  this.error = ''
-                }, 1000)
+                this.$emit('save-success')
+                this.dialog = false
               })
             .catch((error) => {
-              this.error = error.message
-              this.saveError = true
-              this.timeout = setTimeout(() => {
-                this.saveError = false
-                this.error = ''
-              }, 2000)
+              this.$emit('save-error', error)
             })
         }
       },
       createArticle () {
-        console.log('view', this.view)
         this.$store.dispatch('changeView', 'article')
       }
-    },
-
-    beforeDestroy () {
-      this.timeout && clearTimeout(this.timeout)
     }
   }
 </script>
@@ -77,14 +56,6 @@
   .admin-main {
     &__popup {
       overflow-x hidden;
-    }
-    &__notice {
-      z-index: 5;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      text-align: center;
     }
   }
 </style>
