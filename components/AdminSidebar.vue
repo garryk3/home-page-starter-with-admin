@@ -4,7 +4,7 @@
     v-expansion-panel
       v-expansion-panel-content.admin-sidebar__category(v-for="(item,i) in categories", :key="i", :data-index="i", :data-name="item.name")
         div(slot="header", :data-name="item.name", class="admin-sidebar__menu-item")
-          v-icon(left, @click="deleteCategory", data-name="category", title="удалить категорию").admin-sidebar__remove remove_circle
+          v-icon(left, @click.stop="showDialog", data-name="category", title="удалить категорию").admin-sidebar__remove remove_circle
           span {{ item.name }}
         v-card
           v-card-text.admin-sidebar__text.grey.lighten-3(v-for="(item, index) in item.articles", :key="index", :data-index="index", :data-name="item.name")
@@ -15,11 +15,19 @@
         v-dialog(v-model="dialogArt", persistent)
           v-card
             v-card-title(class="headline") Удалить статью?
-            v-card-text Статья будет удалена без возможности восстановления
+            v-card-text Статья будет удалена без возможности восстановления!
             v-card-actions
               v-spacer
-              v-btn(class="green--text darken-1", flat="flat", @click.native="dialogArt = null") Нет
-              v-btn(class="green--text darken-1", flat="flat", @click.native="deleteArticle") Да
+              v-btn(class="green--text darken-1", flat="flat", @click.native="dialogArt = false") Нет
+              v-btn(class="green--text darken-1", flat="flat", @click="deleteArticle") Да
+        v-dialog(v-model="dialogCat", persistent)
+          v-card
+            v-card-title(class="headline") Удалить категорию?
+            v-card-text Категория будет удалена без возможности восстановления вместе со всеми статьями!
+            v-card-actions
+              v-spacer
+              v-btn(class="green--text darken-1", flat="flat", @click.native="dialogCat = false") Нет
+              v-btn(class="green--text darken-1", flat="flat", @click="deleteCategory") Да
 </template>
 
 <script>
@@ -28,8 +36,9 @@
   export default {
     data () {
       return {
-        dialogCat: null,
-        dialogArt: null
+        dialogCat: false,
+        dialogArt: false,
+        target: null
       }
     },
     computed: mapState({
@@ -45,28 +54,29 @@
         const catIndex = e.target.closest('.admin-sidebar__category').dataset.index
         const category = e.target.closest('.admin-sidebar__category').dataset.name
         if (type === 'category') {
-          this.dialogCat = { catIndex, category }
+          this.dialogCat = true
+          this.target = { catIndex, category }
         } else if (type === 'article') {
           const artIndex = e.target.closest('.admin-sidebar__text').dataset.index
           const article = e.target.closest('.admin-sidebar__text').dataset.name
-
-          this.dialogArt = { catIndex, artIndex, category, article }
+          this.dialogArt = true
+          this.target = { catIndex, artIndex, category, article }
         }
       },
       deleteArticle () {
-        console.log('sa', this.dialogArt)
-
-        this.$store.dispatch('deleteArticle', this.dialogArt)
-        this.dialogArt = null
+        this.$store.dispatch('deleteArticle', this.target)
+        this.dialogArt = false
+        this.target = null
       },
-      deleteCategory (e) {
-        const catIndex = e.target.closest('.admin-sidebar__category').dataset.index
-        const category = e.target.closest('.admin-sidebar__category').dataset.name
-        const payload = {catIndex, category}
-        this.$store.dispatch('deleteCategory', payload).then(() => {
+      deleteCategory () {
+        this.$store.dispatch('deleteCategory', this.target).then(() => {
           this.$emit('save-success')
+          this.dialogCat = false
+          this.target = null
         }).catch((err) => {
           this.$emit('save-error', err)
+          this.dialogCat = false
+          this.target = null
         })
       }
     }
@@ -92,6 +102,7 @@
     &__menu-item {
       position: relative;
       padding-left: 15px;
+      user-select: none;
     }
 
     &__remove {
