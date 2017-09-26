@@ -4,13 +4,22 @@
     v-expansion-panel
       v-expansion-panel-content.admin-sidebar__category(v-for="(item,i) in categories", :key="i", :data-index="i", :data-name="item.name")
         div(slot="header", :data-name="item.name", class="admin-sidebar__menu-item")
-          v-icon(left, @click="deleteCategory").admin-sidebar__remove remove_circle
+          v-icon(left, @click="deleteCategory", data-name="category", title="удалить категорию").admin-sidebar__remove remove_circle
           span {{ item.name }}
         v-card
           v-card-text.admin-sidebar__text.grey.lighten-3(v-for="(item, index) in item.articles", :key="index", :data-index="index", :data-name="item.name")
-            v-chip.admin-sidebar__chip(@click="deleteArticle", close)
-              v-icon.admin-sidebar__edit create
+            v-chip.admin-sidebar__chip
+              v-icon.admin-sidebar__edit(@click="editArticle", title="редактировать статью") create
               span.admin-sidebar__cat-name {{ item.name }}
+              v-icon.admin-sidebar__edit(@click.stop="showDialog", data-name="article",title="удалить статью") close
+        v-dialog(v-model="dialogArt", persistent)
+          v-card
+            v-card-title(class="headline") Удалить статью?
+            v-card-text Статья будет удалена без возможности восстановления
+            v-card-actions
+              v-spacer
+              v-btn(class="green--text darken-1", flat="flat", @click.native="dialogArt = null") Нет
+              v-btn(class="green--text darken-1", flat="flat", @click.native="deleteArticle") Да
 </template>
 
 <script>
@@ -18,31 +27,43 @@
 
   export default {
     data () {
-      return {}
+      return {
+        dialogCat: null,
+        dialogArt: null
+      }
     },
     computed: mapState({
       categories: state => state.admin.categories
     }),
     methods: {
       editArticle (e) {
-        const article = e.target.closest('.admin-sidebar__text').dataset.name
-        const category = e.target.closest('.admin-sidebar__category').dataset.name
-        console.log('edit', article, category)
-        console.log('edit', e.target)
+        console.log('ee', e.target)
+        e = true
       },
-      deleteArticle (e) {
-        const artIndex = e.target.closest('.admin-sidebar__text').dataset.index
+      showDialog (e) {
+        const type = e.target.dataset.name
         const catIndex = e.target.closest('.admin-sidebar__category').dataset.index
-        const article = e.target.closest('.admin-sidebar__text').dataset.name
         const category = e.target.closest('.admin-sidebar__category').dataset.name
-        const payload = {catIndex, artIndex, category, article}
-        this.$store.dispatch('deleteArticle', payload)
+        if (type === 'category') {
+          this.dialogCat = { catIndex, category }
+        } else if (type === 'article') {
+          const artIndex = e.target.closest('.admin-sidebar__text').dataset.index
+          const article = e.target.closest('.admin-sidebar__text').dataset.name
+
+          this.dialogArt = { catIndex, artIndex, category, article }
+        }
+      },
+      deleteArticle () {
+        console.log('sa', this.dialogArt)
+
+        this.$store.dispatch('deleteArticle', this.dialogArt)
+        this.dialogArt = null
       },
       deleteCategory (e) {
         const catIndex = e.target.closest('.admin-sidebar__category').dataset.index
         const category = e.target.closest('.admin-sidebar__category').dataset.name
         const payload = {catIndex, category}
-        this.$store.dispatch('deleteCategory', payload).then((res) => {
+        this.$store.dispatch('deleteCategory', payload).then(() => {
           this.$emit('save-success')
         }).catch((err) => {
           this.$emit('save-error', err)
@@ -52,12 +73,16 @@
   }
 </script>
 
-<style scoped lang="stylus">
+<style lang="stylus">
   .admin-sidebar {
     padding-top: 10px;
 
     &__category {
       max-width: 100%;
+
+      > .expansion-panel__header {
+        padding: 12px 16px 12px 40px;
+      }
     }
 
     &__text {

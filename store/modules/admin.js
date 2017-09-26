@@ -49,6 +49,7 @@ const actions = {
     commit(types.CHANGE_VIEW, {payload: article})
   },
   deleteArticle ({commit}, payload) {
+    console.log('pa', payload)
     commit(types.DELETE_ARTICLE, payload)
     return http.post('/delete-article', {
       category: payload.category,
