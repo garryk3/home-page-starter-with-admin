@@ -55,6 +55,7 @@ const actions = {
     return http.post('/add-article', data)
   },
   editArticle ({commit}, data) {
+    console.log('data', data)
     return http.post('/edit-article', data)
   },
   deleteArticle ({commit}, payload) {
