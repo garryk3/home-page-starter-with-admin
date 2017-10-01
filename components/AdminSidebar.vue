@@ -42,12 +42,25 @@
       }
     },
     computed: mapState({
-      categories: state => state.admin.categories
+      categories: state => state.admin.categories,
+      view: state => state.admin.view
     }),
     methods: {
       editArticle (e) {
-        console.log('ee', e.target)
-        e = true
+        const catIndex = e.target.closest('.admin-sidebar__category').dataset.index
+        const category = e.target.closest('.admin-sidebar__category').dataset.name
+        const artIndex = e.target.closest('.admin-sidebar__text').dataset.index
+        const article = e.target.closest('.admin-sidebar__text').dataset.name
+        this.target = { catIndex, artIndex, category, article }
+        this.$store.commit('SET_EDITED_ARTICLE', this.target)
+        if (this.view === 'article') {
+          this.$store.commit('CHANGE_VIEW', 'main')
+          setTimeout(() => {
+            this.$store.commit('CHANGE_VIEW', 'article')
+          }, 0)
+        } else {
+          this.$store.commit('CHANGE_VIEW', 'article')
+        }
       },
       showDialog (e) {
         const type = e.target.dataset.name

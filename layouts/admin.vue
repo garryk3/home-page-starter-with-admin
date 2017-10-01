@@ -1,6 +1,6 @@
  <template lang="pug">
    v-app
-     v-container(fluid)
+     v-container(grid-list-md)
        v-layout(row, wrap)
         v-flex(xs12)
          v-toolbar

@@ -46,7 +46,7 @@
         }
       },
       createArticle () {
-        this.$store.dispatch('changeView', 'article')
+        this.$store.commit('CHANGE_VIEW', 'article')
       }
     }
   }

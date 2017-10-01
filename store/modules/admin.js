@@ -3,7 +3,8 @@ import {http} from '~/plugins/axios'
 
 const state = {
   categories: [],
-  view: 'main'
+  view: 'main',
+  editedArticle: null
 }
 
 const getters = {
@@ -23,7 +24,6 @@ const actions = {
           if (res.data.error) {
             throw new Error(res.data.error)
           }
-          console.log('ew', res)
           http.get('/get-documents-names')
             .then((res) => {
               commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
@@ -42,14 +42,22 @@ const actions = {
         commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
       })
   },
+  getArticle ({state}) {
+    return http.post('/get-article', state.editedArticle)
+      .then((res) => {
+        if (res.data.error) {
+          throw new Error(res.data.error || res.data.err.errmsg)
+        }
+        return res
+      })
+  },
   addArticle ({commit}, data) {
     return http.post('/add-article', data)
   },
-  changeView ({commit}, article) {
-    commit(types.CHANGE_VIEW, {payload: article})
+  editArticle ({commit}, data) {
+    return http.post('/edit-article', data)
   },
   deleteArticle ({commit}, payload) {
-    console.log('pa', payload)
     commit(types.DELETE_ARTICLE, payload)
     return http.post('/delete-article', {
       category: payload.category,
@@ -77,6 +85,16 @@ const mutations = {
     state.categories[payload.catIndex].articles.splice(payload.artIndex, 1)
     return state.categories
   },
+  [types.SET_EDITED_ARTICLE] (state, payload) {
+    if (payload) {
+      state.editedArticle = {
+        category: state.categories[payload.catIndex].name,
+        article: state.categories[payload.catIndex].articles[payload.artIndex].name
+      }
+    } else {
+      state.editedArticle = null
+    }
+  },
   [types.DELETE_CATEGORY] (state, payload) {
     state.categories.splice(payload.catIndex, 1)
     return state.categories
@@ -93,7 +111,7 @@ const mutations = {
       }
     })
   },
-  [types.CHANGE_VIEW] (state, {payload}) {
+  [types.CHANGE_VIEW] (state, payload) {
     state.view = payload
   }
 }
