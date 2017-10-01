@@ -20,7 +20,7 @@ import { mapState } from 'vuex'
 export default {
   layout: 'admin',
   beforeCreate () {
-    this.$store.dispatch('getDocumentsNames')
+    this.$store.dispatch('getArticlesNames')
       .catch((err) => {
         this.saveErrorEvent(err)
       })

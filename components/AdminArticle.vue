@@ -127,7 +127,18 @@
         const data = new FormData(form)
         const images1 = this.images1
         const images2 = this.images2
-        const action = this.editedArticle ? 'editArticle' : 'addArticle'
+        let action
+        let reqData
+        if (this.editedArticle) {
+          action = 'editArticle'
+          reqData = {
+            article: this.editArticle,
+            fields: data
+          }
+        } else {
+          action = 'addArticle'
+          reqData = data
+        }
         if (form.validate()) {
           data.append('category', this.select)
           data.append('title', this.title)
@@ -137,14 +148,14 @@
           data.append('shortText', this.shortText)
           this.images1 && data.append('mainImg', images1)
           this.images2 && data.append('gallery', images2)
-          this.$store.dispatch(action, data).then((res) => {
+          this.$store.dispatch(action, reqData).then((res) => {
             if (res.data.error) {
               this.$emit('save-error', res.data.error)
             } else {
               this.$emit('save-success')
               this.timeout = setTimeout(() => {
                 this.$store.commit('CHANGE_VIEW', 'main')
-                this.$store.dispatch('getDocumentsNames')
+                this.$store.dispatch('getArticlesNames')
               }, 1000)
             }
           })

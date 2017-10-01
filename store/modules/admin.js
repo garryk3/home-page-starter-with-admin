@@ -24,22 +24,22 @@ const actions = {
           if (res.data.error) {
             throw new Error(res.data.error)
           }
-          http.get('/get-documents-names')
+          http.get('/get-articles-names')
             .then((res) => {
-              commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
+              commit(types.GET_ARTICLES_NAMES, {payload: res.data})
             })
         })
     } else {
       return Promise.reject(new Error('Категория уже существует'))
     }
   },
-  getDocumentsNames ({commit}) {
-    return http.get('/get-documents-names')
+  getArticlesNames ({commit}) {
+    return http.get('/get-articles-names')
       .then((res) => {
         if (res.data.error) {
           throw new Error(res.data.error || res.data.err.errmsg)
         }
-        commit(types.GET_DOCUMENTS_NAMES, {payload: res.data})
+        commit(types.GET_ARTICLES_NAMES, {payload: res.data})
       })
   },
   getArticle ({state}) {
@@ -78,7 +78,7 @@ const actions = {
 }
 
 const mutations = {
-  [types.GET_DOCUMENTS_NAMES] (state, {payload}) {
+  [types.GET_ARTICLES_NAMES] (state, {payload}) {
     state.categories = payload
   },
   [types.DELETE_ARTICLE] (state, payload) {
