@@ -137,6 +137,7 @@
           data.append('shortText', this.shortText)
           this.images1 && data.append('mainImg', images1)
           this.images2 && data.append('gallery', images2)
+          this.editedArticle && data.append('_id', this.editedArticle._id)
           this.$store.dispatch(action, data).then((res) => {
             if (res.data.error) {
               this.$emit('save-error', res.data.error)

@@ -90,7 +90,7 @@ const mutations = {
     if (payload) {
       state.editedArticle = {
         category: state.categories[payload.catIndex].name,
-        article: state.categories[payload.catIndex].articles[payload.artIndex].name
+        _id: state.categories[payload.catIndex].articles[payload.artIndex]._id
       }
     } else {
       state.editedArticle = null
