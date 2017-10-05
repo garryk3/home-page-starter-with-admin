@@ -88,10 +88,8 @@
             }
             reader.readAsDataURL(item)
           })
-          console.log('arr', arr)
           this.images = arr
         }
-        // const image = new Image()
       },
       saveImages (e) {
         const files = e.target.files

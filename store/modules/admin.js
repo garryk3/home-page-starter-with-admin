@@ -52,7 +52,11 @@ const actions = {
       })
   },
   addArticle ({commit}, data) {
-    return http.post('/add-article', data)
+    return http.post('/add-article', data, { headers: {
+      'Content-Type': 'multipart/form-data'
+    }}).then((res) => {
+      return res
+    })
   },
   editArticle ({commit}, data) {
     console.log('data', data)

@@ -17,12 +17,12 @@
               v-text-field(:rules="lengthRules", v-model="title", label="Заголовок страницы", required, hint="title", persistent-hint)
               v-text-field(:rules="lengthRules", v-model="name", label="Название статьи", required, hint="tag H1", persistent-hint)
               v-text-field(:rules="lengthRules", v-model="keywords", label="Ключевые слова", required, hint="keywords (через запятую)", persistent-hint)
-              input-file(show-images, required, title="Главное изображение", large, fileUpload="input2", @input2="saveInput2")
+              input-file(show-images, required, name="mainImg" title="Главное изображение", large, fileUpload="input1", @input1="saveInput1")
             v-flex(xs6).admin-article__right
               v-text-field(v-model="shortText", :rules="lengthRules", label="Краткое описание статьи", required, textarea, rows="7")
           v-layout
             v-flex(xs6)
-              input-file(show-images, multiple-file, title="Галерея", small, fileUpload="input1", @input1="saveInput1")
+              input-file(show-images, multiple-file, name="gallery" title="Галерея", small, fileUpload="input2", @input2="saveInput2")
           v-layout
             v-flex(xs12)
               .quill-editor.admin-article__quill(
@@ -117,6 +117,7 @@
     },
     methods: {
       saveInput1 (files) {
+        console.log('files', files)
         this.images1 = files
       },
       saveInput2 (files) {
@@ -125,8 +126,6 @@
       saveArticle () {
         const form = this.$refs.form
         const data = new FormData(form)
-        const images1 = this.images1
-        const images2 = this.images2
         const action = this.editedArticle ? 'editArticle' : 'addArticle'
         if (form.validate()) {
           data.append('category', this.select)
@@ -135,8 +134,13 @@
           data.append('keywords', this.keywords)
           data.append('content', this.content)
           data.append('shortText', this.shortText)
-          this.images1 && data.append('mainImg', images1)
-          this.images2 && data.append('gallery', images2)
+          this.images1 && data.append('mainImg', this.images1, this.images1.name)
+          if (this.images2) {
+            for (let i = 0; i < this.images2.length; i++) {
+              data.append('gallery', this.images2[i], this.images2[i].name)
+            }
+          }
+
           this.editedArticle && data.append('_id', this.editedArticle._id)
           this.$store.dispatch(action, data).then((res) => {
             if (res.data.error) {
