@@ -8,8 +8,9 @@
           span.input-file__title {{ title }}
             span(v-if="required") *
     v-layout(row, wrap, v-if="showImages")
-      v-flex(v-for="item in images", key="index", v-bind="size")
+      v-flex(v-for="(item, index) in images", key="index", v-bind="size")
         v-card.input-file__img-wrapper(flat, tile)
+          v-icon.input-file__close(:data-num="index", @click="deleteImage") close
           v-card-media.input-file__img(:src="item", :height="imgHeight")
 </template>
 
@@ -80,8 +81,8 @@
       createImages (file) {
         const arr = []
         if (file.length) {
-          const arrFiles = Array.from(file)
-          arrFiles.forEach((item) => {
+          this.files = Array.from(file)
+          this.files.forEach((item) => {
             const reader = new FileReader()
             reader.onload = (e) => {
               arr.push(e.target.result)
@@ -94,9 +95,18 @@
       saveImages (e) {
         const files = e.target.files
         if (files.length) {
-          this.fileUpload && this.$emit(this.fileUpload, files)
           this.createImages(files)
+          this.fileUpload && this.$emit(this.fileUpload, this.files)
         }
+      },
+      deleteImage (e) {
+        console.log('1', this.files)
+        const num = +e.target.dataset.num
+        this.images.splice(num, 1)
+        this.files.splice(num, 1)
+        this.$refs.input.value = ''
+        this.fileUpload && this.$emit(this.fileUpload, this.files)
+        console.log('2', this.files)
       }
     }
   }
@@ -129,9 +139,25 @@
     }
 
     &__img-wrapper {
+      position : relative;
       margin-bottom: 15px;
       object-fit: contain;
       overflow: hidden;
+    }
+
+    &__close {
+      position: absolute
+      top: 2px
+      z-index: 2;
+      right: 2px;
+      background: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      transition all 0.2s;
+
+      &:hover {
+        opacity 0.6
+      }
     }
 
     &__title  {

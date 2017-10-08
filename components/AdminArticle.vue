@@ -17,12 +17,13 @@
               v-text-field(:rules="lengthRules", v-model="title", label="Заголовок страницы", required, hint="title", persistent-hint)
               v-text-field(:rules="lengthRules", v-model="name", label="Название статьи", required, hint="tag H1", persistent-hint)
               v-text-field(:rules="lengthRules", v-model="keywords", label="Ключевые слова", required, hint="keywords (через запятую)", persistent-hint)
-              input-file(show-images, required, name="mainImg" title="Главное изображение", large, fileUpload="input1", @input1="saveInput1")
+              v-input-file(show-images, required, name="mainImg" title="Главное изображение", large, fileUpload="input1", @input1="saveInput1")
             v-flex(xs6).admin-article__right
               v-text-field(v-model="shortText", :rules="lengthRules", label="Краткое описание статьи", required, textarea, rows="7")
+              span * - помечены поля, обязательные для заполнения
           v-layout
             v-flex(xs6)
-              input-file(show-images, multiple-file, name="gallery" title="Галерея", small, fileUpload="input2", @input2="saveInput2")
+              v-input-file(show-images, multiple-file, name="gallery" title="Галерея", small, fileUpload="input2", @input2="saveInput2")
           v-layout
             v-flex(xs12)
               .quill-editor.admin-article__quill(
@@ -46,24 +47,26 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex'
-  import InputFile from '~/components/InputFile'
+  import VInputFile from '~/components/VInputFile'
 
   export default {
-    components: { InputFile },
+    components: { VInputFile },
     created () {
       if (this.editedArticle) {
         this.$store.dispatch('getArticle').then((res) => {
           if (res.data.error) {
             this.$emit('save-error', res.data.error)
+          } else {
+            console.log('res', res.data)
+            this.select = res.data.category
+            this.title = res.data.title
+            this.name = res.data.name
+            this.keywords = res.data.keywords
+            this.shortText = res.data.shortText
+            this.mainImg = res.data.mainImg[0]
+            this.gallery = res.data.gallery
+            this.content = res.data.content
           }
-          this.select = res.data.category
-          this.title = res.data.title
-          this.name = res.data.name
-          this.keywords = res.data.keywords
-          this.shortText = res.data.shortText
-          this.mainImg = res.data.mainImg
-          this.gallery = res.data.gallery
-          this.content = res.data.content
         })
       }
     },
@@ -117,10 +120,10 @@
     },
     methods: {
       saveInput1 (files) {
-        console.log('files', files)
         this.images1 = files
       },
       saveInput2 (files) {
+        console.log('dkjkj', files)
         this.images2 = files
       },
       saveArticle () {
@@ -134,26 +137,26 @@
           data.append('keywords', this.keywords)
           data.append('content', this.content)
           data.append('shortText', this.shortText)
-          this.images1 && data.append('mainImg', this.images1, this.images1.name)
-          if (this.images2) {
+          this.images1 && data.append('mainImg', this.images1[0], this.images1[0].name)
+          if (this.images2 && this.images2.length) {
             for (let i = 0; i < this.images2.length; i++) {
               data.append('gallery', this.images2[i], this.images2[i].name)
             }
           }
-
+          console.log('action', action, this.editedArticle)
           this.editedArticle && data.append('_id', this.editedArticle._id)
           this.$store.dispatch(action, data).then((res) => {
             if (res.data.error) {
               this.$emit('save-error', res.data.error)
             } else {
               this.$emit('save-success')
+              this.$store.commit('SET_EDITED_ARTICLE', null)
               this.timeout = setTimeout(() => {
                 this.$store.commit('CHANGE_VIEW', 'main')
                 this.$store.dispatch('getArticlesNames')
               }, 1000)
             }
           })
-          this.$store.commit('SET_EDITED_ARTICLE', null)
         }
       },
       closeArticle () {
