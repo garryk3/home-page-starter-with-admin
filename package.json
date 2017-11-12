@@ -14,9 +14,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
-    "fs": "^0.0.1-security",
     "nuxt": "^1.0.0-rc3",
-    "path": "^0.12.7",
     "vue-quill-editor": "^2.3.0",
     "vuetify": "^0.15.7"
   },

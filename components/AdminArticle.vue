@@ -14,16 +14,61 @@
                 label="Выберите категорию",
                 data-vv-name="select",
                 required)
-              v-text-field(:rules="lengthRules", v-model="title", label="Заголовок страницы", required, hint="title", persistent-hint)
-              v-text-field(:rules="lengthRules", v-model="name", label="Название статьи", required, hint="tag H1", persistent-hint)
-              v-text-field(:rules="lengthRules", v-model="keywords", label="Ключевые слова", required, hint="keywords (через запятую)", persistent-hint)
-              v-input-file(show-images, required, name="mainImg" title="Главное изображение", large, fileUpload="input1", @input1="saveInput1")
+              v-text-field(
+                :rules="lengthRules",
+                v-model="title",
+                label="Заголовок страницы",
+                required,
+                hint="title",
+                persistent-hint
+              )
+              v-text-field(
+                :rules="lengthRules",
+                v-model="name",
+                label="Название статьи",
+                required,
+                hint="tag H1",
+                persistent-hint
+              )
+              v-text-field(
+                :rules="lengthRules",
+                v-model="keywords",
+                label="Ключевые слова",
+                required,
+                hint="keywords (через запятую)",
+                persistent-hint
+              )
+              v-input-file(
+                show-images,
+                required,
+                name="mainImg"
+                title="Главное изображение",
+                large, fileUpload="input1",
+                @input1="saveInput1",
+                :defaultImages="defaultImages1"
+              )
             v-flex(xs6).admin-article__right
-              v-text-field(v-model="shortText", :rules="lengthRules", label="Краткое описание статьи", required, textarea, rows="7")
+              v-text-field(
+                v-model="shortText",
+                :rules="lengthRules",
+                label="Краткое описание статьи",
+                required,
+                textarea,
+                rows="7"
+              )
               span * - помечены поля, обязательные для заполнения
           v-layout
             v-flex(xs6)
-              v-input-file(show-images, multiple-file, name="gallery" title="Галерея", small, fileUpload="input2", @input2="saveInput2")
+              v-input-file(
+                show-images,
+                multiple-file,
+                name="gallery",
+                title="Галерея",
+                small,
+                fileUpload="input2",
+                @input2="saveInput2",
+                :defaultImages="defaultImages2"
+              )
           v-layout
             v-flex(xs12)
               .quill-editor.admin-article__quill(
@@ -52,9 +97,12 @@
   export default {
     components: { VInputFile },
     created () {
+      console.log('edited', this.editedArticle)
       if (this.editedArticle) {
         this.$store.dispatch('getArticle').then((res) => {
           if (res.data.error) {
+            console.log('err', res.data)
+
             this.$emit('save-error', res.data.error)
           } else {
             console.log('res', res.data)
@@ -63,8 +111,8 @@
             this.name = res.data.name
             this.keywords = res.data.keywords
             this.shortText = res.data.shortText
-            this.mainImg = res.data.mainImg[0]
-            this.gallery = res.data.gallery
+            this.defaultImages1 = res.data.mainImg
+            this.defaultImages2 = res.data.gallery
             this.content = res.data.content
           }
         })
@@ -80,6 +128,8 @@
         ],
         valid: false,
         images1: null,
+        defaultImages1: null,
+        defaultImages2: null,
         images2: null,
         select: null,
         shortText: '',

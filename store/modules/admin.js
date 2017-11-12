@@ -19,12 +19,12 @@ const actions = {
   addCategory ({commit, state}, payload) {
     const repeat = state.categories.some((item) => item.name === payload)
     if (!repeat && payload && (typeof payload === 'string')) {
-      return http.post('/add-category', {title: payload})
+      return http.post('/category', {title: payload})
         .then((res) => {
           if (res.data.error) {
             throw new Error(res.data.error)
           }
-          http.get('/get-articles-names')
+          http.get('/category/all', { params: { onlyNames: true } })
             .then((res) => {
               commit(types.GET_ARTICLES_NAMES, {payload: res.data})
             })
@@ -33,8 +33,22 @@ const actions = {
       return Promise.reject(new Error('Категория уже существует'))
     }
   },
+  deleteCategory ({commit}, payload) {
+    console.log('payload', payload)
+    commit(types.DELETE_CATEGORY, payload)
+    return http.delete('/category', {
+      params: {
+        category: payload.category
+      }
+    }).then((res) => {
+      if (res.data.error) {
+        throw new Error(res.data.error.message || res.data.err.errmsg)
+      }
+      return res
+    })
+  },
   getArticlesNames ({commit}) {
-    return http.get('/get-articles-names')
+    return http.get('/category/all', { params: { onlyNames: true } })
       .then((res) => {
         if (res.data.error) {
           throw new Error(res.data.error || res.data.err.errmsg)
@@ -43,16 +57,17 @@ const actions = {
       })
   },
   getArticle ({state}) {
-    return http.post('/get-article', state.editedArticle)
+    return http.get('/article', { params: { category: state.editedArticle.category, id: state.editedArticle._id } })
       .then((res) => {
+        console.log('res', res)
         if (res.data.error) {
-          throw new Error(res.data.error || res.data.err.errmsg)
+          throw new Error(res.data.error)
         }
         return res
       })
   },
   addArticle ({commit}, data) {
-    return http.post('/add-article', data, { headers: {
+    return http.post('/article', data, { headers: {
       'Content-Type': 'multipart/form-data'
     }}).then((res) => {
       return res
@@ -60,24 +75,15 @@ const actions = {
   },
   editArticle ({commit}, data) {
     console.log('data', data)
-    return http.post('/edit-article', data)
+    return http.put('/article', data)
   },
   deleteArticle ({commit}, payload) {
     commit(types.DELETE_ARTICLE, payload)
-    return http.post('/delete-article', {
-      category: payload.category,
-      article: payload.article
-    })
-  },
-  deleteCategory ({commit}, payload) {
-    commit(types.DELETE_CATEGORY, payload)
-    return http.post('/delete-category', {
-      category: payload.category
-    }).then((res) => {
-      if (res.data.error) {
-        throw new Error(res.data.error.message || res.data.err.errmsg)
+    return http.delete('/article', {
+      params: {
+        category: payload.category,
+        article: payload.article
       }
-      return res
     })
   }
 }
@@ -92,6 +98,7 @@ const mutations = {
   },
   [types.SET_EDITED_ARTICLE] (state, payload) {
     if (payload) {
+      console.log('pay', payload)
       state.editedArticle = {
         category: state.categories[payload.catIndex].name,
         _id: state.categories[payload.catIndex].articles[payload.artIndex]._id

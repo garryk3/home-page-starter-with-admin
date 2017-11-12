@@ -15,14 +15,20 @@
 </template>
 
 <script>
+  import config from '../config'
+  const apiUrl = config.apiUrl
+
   export default {
     data () {
       return {
-        images: [],
-        files: []
+        files: [],
+        loadedImages: []
       }
     },
     props: {
+      defaultImages: {
+        type: Array
+      },
       fileUpload: {
         type: String
       },
@@ -72,6 +78,20 @@
         } else {
           return {xs12: true}
         }
+      },
+      images: {
+        get () {
+          if (this.defaultImages && this.defaultImages.length && !this.loadedImages.length) {
+            return this.defaultImages.map((item) => {
+              return apiUrl + item
+            })
+          } else {
+            return this.loadedImages
+          }
+        },
+        set (value) {
+          this.loadedImages = value
+        }
       }
     },
     methods: {
@@ -90,6 +110,7 @@
             reader.readAsDataURL(item)
           })
           this.images = arr
+          console.log('img', this.images, arr)
         }
       },
       saveImages (e) {
@@ -100,13 +121,13 @@
         }
       },
       deleteImage (e) {
-        console.log('1', this.files)
         const num = +e.target.dataset.num
+        console.log('num', num, e.target, this.images)
         this.images.splice(num, 1)
         this.files.splice(num, 1)
         this.$refs.input.value = ''
         this.fileUpload && this.$emit(this.fileUpload, this.files)
-        console.log('2', this.files)
+        console.log('num 2', this.images)
       }
     }
   }
