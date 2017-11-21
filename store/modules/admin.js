@@ -57,9 +57,12 @@ const actions = {
       })
   },
   getArticle ({state}) {
-    return http.get('/article', { params: { category: state.editedArticle.category, id: state.editedArticle._id } })
+    return http.get('/article', {
+      params: {
+        category: state.editedArticle.category,
+        id: state.editedArticle._id
+      }})
       .then((res) => {
-        console.log('res', res)
         if (res.data.error) {
           throw new Error(res.data.error)
         }

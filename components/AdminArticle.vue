@@ -9,10 +9,10 @@
             v-flex(xs6)
               v-select(
                 :items="pureCategories",
-                v-model="select",
+                v-model="category",
                 :rules="lengthRules",
                 label="Выберите категорию",
-                data-vv-name="select",
+                data-vv-name="category",
                 required)
               v-text-field(
                 :rules="lengthRules",
@@ -45,7 +45,7 @@
                 title="Главное изображение",
                 large, fileUpload="input1",
                 @input1="saveInput1",
-                :defaultImages="defaultImages1"
+                :defaultImages="defaultImagesMain"
               )
             v-flex(xs6).admin-article__right
               v-text-field(
@@ -67,7 +67,7 @@
                 small,
                 fileUpload="input2",
                 @input2="saveInput2",
-                :defaultImages="defaultImages2"
+                :defaultImages="defaultImagesGallery"
               )
           v-layout
             v-flex(xs12)
@@ -83,8 +83,7 @@
                 @click.prevent="saveArticle",
                 :disabled="loading",
                 type="submit",
-                formenctype="multipart/form-data",
-                formmethod="post"
+                formenctype="multipart/form-data"
               ) Сохранить
               v-btn.blue-grey.white--text(@click="closeArticle") Закрыть
 
@@ -97,23 +96,12 @@
   export default {
     components: { VInputFile },
     created () {
-      console.log('edited', this.editedArticle)
       if (this.editedArticle) {
         this.$store.dispatch('getArticle').then((res) => {
           if (res.data.error) {
-            console.log('err', res.data)
-
             this.$emit('save-error', res.data.error)
           } else {
-            console.log('res', res.data)
-            this.select = res.data.category
-            this.title = res.data.title
-            this.name = res.data.name
-            this.keywords = res.data.keywords
-            this.shortText = res.data.shortText
-            this.defaultImages1 = res.data.mainImg
-            this.defaultImages2 = res.data.gallery
-            this.content = res.data.content
+            this.saveDefaultValues(res.data)
           }
         })
       }
@@ -127,11 +115,11 @@
           (v) => !!v || 'Заполните поле'
         ],
         valid: false,
-        images1: null,
-        defaultImages1: null,
-        defaultImages2: null,
-        images2: null,
-        select: null,
+        imagesMain: null,
+        defaultImagesMain: null,
+        defaultImagesGallery: null,
+        imagesGallery: null,
+        category: null,
         shortText: '',
         title: '',
         name: '',
@@ -169,31 +157,38 @@
       })
     },
     methods: {
+      saveDefaultValues (data) {
+        this.category = data.category
+        this.title = data.title
+        this.name = data.name
+        this.keywords = data.keywords
+        this.shortText = data.shortText
+        this.defaultImagesMain = data.mainImg
+        this.defaultImagesGallery = data.gallery
+        this.content = data.content
+      },
       saveInput1 (files) {
-        this.images1 = files
+        this.imagesMain = files
       },
       saveInput2 (files) {
-        console.log('dkjkj', files)
-        this.images2 = files
+        this.imagesGallery = files
       },
       saveArticle () {
-        const form = this.$refs.form
-        const data = new FormData(form)
+        const data = new FormData()
         const action = this.editedArticle ? 'editArticle' : 'addArticle'
-        if (form.validate()) {
-          data.append('category', this.select)
+        if (this.$refs.form.validate()) {
+          data.append('category', this.category)
           data.append('title', this.title)
           data.append('name', this.name)
           data.append('keywords', this.keywords)
           data.append('content', this.content)
           data.append('shortText', this.shortText)
-          this.images1 && data.append('mainImg', this.images1[0], this.images1[0].name)
-          if (this.images2 && this.images2.length) {
-            for (let i = 0; i < this.images2.length; i++) {
-              data.append('gallery', this.images2[i], this.images2[i].name)
+          this.imagesMain && data.append('mainImg', this.imagesMain[0], this.imagesMain[0].name)
+          if (this.imagesGallery && this.imagesGallery.length) {
+            for (let i = 0; i < this.imagesGallery.length; i++) {
+              data.append('gallery', this.imagesGallery[i], this.imagesGallery[i].name)
             }
           }
-          console.log('action', action, this.editedArticle)
           this.editedArticle && data.append('_id', this.editedArticle._id)
           this.$store.dispatch(action, data).then((res) => {
             if (res.data.error) {

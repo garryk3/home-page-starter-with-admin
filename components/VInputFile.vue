@@ -1,23 +1,37 @@
-<template lang="pug">
-  v-container(fluid).input-file
-    v-layout(row, wrap)
-      v-flex(xs12).input-file__wrapper
-        input.input-file__input(:name="name", ref="input", type="file", @change="saveImages", :multiple="multipleFile")
-        v-btn.dark--text.input-file__upload-btn(block, @click="onChange")
-          v-icon(left, light) backup
-          span.input-file__title {{ title }}
-            span(v-if="required") *
-    v-layout(row, wrap, v-if="showImages")
-      v-flex(v-for="(item, index) in images", key="index", v-bind="size")
-        v-card.input-file__img-wrapper(flat, tile)
-          v-icon.input-file__close(:data-num="index", @click="deleteImage") close
-          v-card-media.input-file__img(:src="item", :height="imgHeight")
+<template>
+  <v-container class="input-file" fluid>
+    <v-layout row wrap>
+        <v-flex xs12 class="input-file__wrapper">
+          <input
+            type="file"
+            class="input-file__input"
+            :name="name"
+            ref="input"
+            @change="saveImages"
+            :multiple="multipleFile">
+          <v-btn class="dark--text input-file__upload-btn" block @click="onChange">
+            <v-icon left right>backup</v-icon>
+            <span class="input-file__title">
+              {{ title }}
+              <span v-if="required"></span>
+            </span>
+          </v-btn>
+        </v-flex>
+    </v-layout>
+    <v-layout row wrap v-if="showImages">
+      <v-flex v-for="(item, index) in images" key="index" v-bind="size">
+        <v-card class="input-file__img-wrapper" flat tile>
+          <v-icon class="input-file__close" :data-num="index" @click="deleteImage">close</v-icon>
+          <div class="input-file__img" :height="imgHeight">
+            <img :src="item" alt="">
+          </div>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-  import config from '../config'
-  const apiUrl = config.apiUrl
-
   export default {
     data () {
       return {
@@ -69,6 +83,12 @@
         type: String
       }
     },
+    watch: {
+      defaultImages () {
+        console.log('def img', this.defaultImages)
+        return this.defaultImages
+      }
+    },
     computed: {
       size () {
         if (this.small) {
@@ -81,16 +101,14 @@
       },
       images: {
         get () {
-          if (this.defaultImages && this.defaultImages.length && !this.loadedImages.length) {
-            return this.defaultImages.map((item) => {
-              return apiUrl + item
-            })
+          if (this.defaultImages && !this.loadedImages.length) {
+            return this.defaultImages
           } else {
             return this.loadedImages
           }
         },
-        set (value) {
-          this.loadedImages = value
+        set (val) {
+          return val
         }
       }
     },
@@ -109,8 +127,7 @@
             }
             reader.readAsDataURL(item)
           })
-          this.images = arr
-          console.log('img', this.images, arr)
+          this.loadedImages = arr
         }
       },
       saveImages (e) {
@@ -122,12 +139,10 @@
       },
       deleteImage (e) {
         const num = +e.target.dataset.num
-        console.log('num', num, e.target, this.images)
-        this.images.splice(num, 1)
+        this.images = this.images.splice(num, 1)
         this.files.splice(num, 1)
         this.$refs.input.value = ''
         this.fileUpload && this.$emit(this.fileUpload, this.files)
-        console.log('num 2', this.images)
       }
     }
   }
@@ -139,9 +154,13 @@
     color: rgba(0,0,0,.54);
 
     &__img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: 150px;
+      object-fit: contain;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+      }
     }
 
     &__input {
