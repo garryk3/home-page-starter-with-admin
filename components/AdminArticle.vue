@@ -176,6 +176,8 @@
       saveArticle () {
         const data = new FormData()
         const action = this.editedArticle ? 'editArticle' : 'addArticle'
+        const imagesMain = this.imagesMain || this.defaultImagesMain
+        const imagesGallery = this.imagesGallery || this.defaultImagesGallery
         if (this.$refs.form.validate()) {
           data.append('category', this.category)
           data.append('title', this.title)
@@ -183,10 +185,22 @@
           data.append('keywords', this.keywords)
           data.append('content', this.content)
           data.append('shortText', this.shortText)
-          this.imagesMain && data.append('mainImg', this.imagesMain[0], this.imagesMain[0].name)
-          if (this.imagesGallery && this.imagesGallery.length) {
-            for (let i = 0; i < this.imagesGallery.length; i++) {
-              data.append('gallery', this.imagesGallery[i], this.imagesGallery[i].name)
+
+          if (imagesMain && imagesMain.length) {
+            if (typeof imagesMain[0] === 'object') {
+              data.append('mainImg', imagesMain[0], imagesMain[0].name)
+            } else if (typeof imagesMain[0] === 'string') {
+              console.log('main img arr', imagesMain)
+              data.append('mainImg', JSON.stringify(imagesMain))
+            }
+          }
+          if (imagesGallery && imagesGallery.length) {
+            if (typeof imagesGallery[0] === 'object') {
+              for (let i = 0; i < imagesGallery.length; i++) {
+                data.append('gallery', imagesGallery[i], imagesGallery[i].name)
+              }
+            } else if (typeof imagesGallery[0] === 'string') {
+              data.append('gallery', JSON.stringify(imagesGallery))
             }
           }
           this.editedArticle && data.append('_id', this.editedArticle._id)

@@ -77,7 +77,6 @@ const actions = {
     })
   },
   editArticle ({commit}, data) {
-    console.log('data', data)
     return http.put('/article', data)
   },
   deleteArticle ({commit}, payload) {
