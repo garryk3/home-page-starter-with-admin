@@ -174,11 +174,26 @@
       saveGalleryImages (files) {
         this.imagesGallery = files
       },
+      sendData (action, data) {
+        this.$store.dispatch(action, data).then((res) => {
+          if (res.data.error) {
+            this.$emit('save-error', res.data.error)
+          } else {
+            this.$emit('save-success')
+            this.$store.commit('SET_EDITED_ARTICLE', null)
+            this.timeout = setTimeout(() => {
+              this.$store.commit('CHANGE_VIEW', 'main')
+              this.$store.dispatch('getArticlesNames')
+            }, 1000)
+          }
+        })
+      },
       saveArticle () {
         const data = new FormData()
         const action = this.editedArticle ? 'editArticle' : 'addArticle'
         const imagesMain = this.imagesMain || this.defaultImagesMain
         const imagesGallery = this.imagesGallery || this.defaultImagesGallery
+
         if (this.$refs.form.validate()) {
           data.append('category', this.category)
           data.append('title', this.title)
@@ -204,18 +219,7 @@
             }
           }
           this.editedArticle && data.append('_id', this.editedArticle._id)
-          this.$store.dispatch(action, data).then((res) => {
-            if (res.data.error) {
-              this.$emit('save-error', res.data.error)
-            } else {
-              this.$emit('save-success')
-              this.$store.commit('SET_EDITED_ARTICLE', null)
-              this.timeout = setTimeout(() => {
-                this.$store.commit('CHANGE_VIEW', 'main')
-                this.$store.dispatch('getArticlesNames')
-              }, 1000)
-            }
-          })
+          this.sendData(action, data)
         }
       },
       closeArticle () {
