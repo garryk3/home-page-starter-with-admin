@@ -34,7 +34,6 @@ const actions = {
     }
   },
   deleteCategory ({commit}, payload) {
-    console.log('payload', payload)
     commit(types.DELETE_CATEGORY, payload)
     return http.delete('/category', {
       params: {
@@ -100,7 +99,6 @@ const mutations = {
   },
   [types.SET_EDITED_ARTICLE] (state, payload) {
     if (payload) {
-      console.log('pay', payload)
       state.editedArticle = {
         category: state.categories[payload.catIndex].name,
         _id: state.categories[payload.catIndex].articles[payload.artIndex]._id

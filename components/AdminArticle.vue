@@ -43,8 +43,9 @@
                 required,
                 name="mainImg"
                 title="Главное изображение",
-                large, fileUpload="input1",
-                @input1="saveInput1",
+                large,
+                fileUploadEvent="inputSaveEventMain",
+                @inputSaveEventMain="saveMainImage",
                 :defaultImages="defaultImagesMain"
               )
             v-flex(xs6).admin-article__right
@@ -65,8 +66,8 @@
                 name="gallery",
                 title="Галерея",
                 small,
-                fileUpload="input2",
-                @input2="saveInput2",
+                fileUploadEvent="inputSaveEventGallery",
+                @inputSaveEventGallery="saveGalleryImages",
                 :defaultImages="defaultImagesGallery"
               )
           v-layout
@@ -167,10 +168,10 @@
         this.defaultImagesGallery = data.gallery
         this.content = data.content
       },
-      saveInput1 (files) {
+      saveMainImage (files) {
         this.imagesMain = files
       },
-      saveInput2 (files) {
+      saveGalleryImages (files) {
         this.imagesGallery = files
       },
       saveArticle () {
@@ -190,7 +191,6 @@
             if (typeof imagesMain[0] === 'object') {
               data.append('mainImg', imagesMain[0], imagesMain[0].name)
             } else if (typeof imagesMain[0] === 'string') {
-              console.log('main img arr', imagesMain)
               data.append('mainImg', JSON.stringify(imagesMain))
             }
           }

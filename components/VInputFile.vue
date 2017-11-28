@@ -43,7 +43,7 @@
       defaultImages: {
         type: Array
       },
-      fileUpload: {
+      fileUploadEvent: {
         type: String
       },
       imgHeight: {
@@ -85,7 +85,6 @@
     },
     watch: {
       defaultImages () {
-        console.log('def img', this.defaultImages)
         return this.defaultImages
       }
     },
@@ -134,15 +133,17 @@
         const files = e.target.files
         if (files.length) {
           this.createImages(files)
-          this.fileUpload && this.$emit(this.fileUpload, this.files)
+          this.fileUploadEvent && this.$emit(this.fileUploadEvent, this.files)
         }
       },
       deleteImage (e) {
         const num = +e.target.dataset.num
+        const outputImages = this.files.length ? this.files : this.images
+
         this.images = this.images.splice(num, 1)
-        this.files.splice(num, 1)
+        this.files.length && this.files.splice(num, 1)
         this.$refs.input.value = ''
-        this.fileUpload && this.$emit(this.fileUpload, this.files)
+        this.fileUploadEvent && this.$emit(this.fileUploadEvent, outputImages)
       }
     }
   }
