@@ -90,12 +90,10 @@
     },
     computed: {
       size () {
-        if (this.small) {
-          return {xs4: true}
-        } else if (this.middle) {
-          return {xs6: true}
-        } else {
-          return {xs12: true}
+        switch (true) {
+          case this.small: return {xs4: true}
+          case this.middle: return {xs6: true}
+          default: return {xs12: true}
         }
       },
       images: {

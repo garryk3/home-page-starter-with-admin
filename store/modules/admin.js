@@ -4,7 +4,8 @@ import {http} from '~/plugins/axios'
 const state = {
   categories: [],
   view: 'main',
-  editedArticle: null
+  editedArticle: null,
+  auth: false
 }
 
 const getters = {

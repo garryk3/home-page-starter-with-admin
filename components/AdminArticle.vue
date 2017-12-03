@@ -19,7 +19,7 @@
                 v-model="title",
                 label="Заголовок страницы",
                 required,
-                hint="title",
+                hint="title (для отображения заголовка страницы в поисковой системе)",
                 persistent-hint
               )
               v-text-field(
@@ -27,7 +27,15 @@
                 v-model="name",
                 label="Название статьи",
                 required,
-                hint="tag H1",
+                hint="tag H1 (главный заголовок страницы)",
+                persistent-hint
+              )
+              v-text-field(
+                :rules="lengthRules",
+                v-model="description",
+                label="Описание",
+                required,
+                hint="description (для отображения описания в поисковой системе)",
                 persistent-hint
               )
               v-text-field(
@@ -71,11 +79,12 @@
                 :defaultImages="defaultImagesGallery"
               )
           v-layout
-            v-flex(xs12)
-              .quill-editor.admin-article__quill(
-                v-model="content",
-                v-quill:myQuillEditor="editorOption"
-              )
+            div
+              v-flex(xs12)
+                .quill-editor.admin-article__quill(
+                  v-model="content",
+                  v-quill:myQuillEditor="editorOption"
+                )
           v-layout(row, justify-center).admin-article__buttons
             v-flex(xs12)
               v-btn(
@@ -84,7 +93,8 @@
                 @click.prevent="saveArticle",
                 :disabled="loading",
                 type="submit",
-                formenctype="multipart/form-data"
+                formenctype="multipart/form-data",
+                class="admin-article__btn-save"
               ) Сохранить
               v-btn.blue-grey.white--text(@click="closeArticle") Закрыть
 
@@ -125,6 +135,7 @@
         title: '',
         name: '',
         keywords: '',
+        description: '',
         article: false,
         loading: false,
         timeout: null,
@@ -163,6 +174,7 @@
         this.title = data.title
         this.name = data.name
         this.keywords = data.keywords
+        this.description = data.description
         this.shortText = data.shortText
         this.defaultImagesMain = data.mainImg
         this.defaultImagesGallery = data.gallery
@@ -199,6 +211,7 @@
           data.append('title', this.title)
           data.append('name', this.name)
           data.append('keywords', this.keywords)
+          data.append('description', this.description)
           data.append('content', this.content)
           data.append('shortText', this.shortText)
 
@@ -232,9 +245,8 @@
 
 <style lang="stylus">
   .admin-article {
-
-    &__buttons {
-      margin-top: 60px !important;
+    &__btn-save {
+      margin-left: 0;
     }
 
     &__notice {
